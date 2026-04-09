@@ -2,129 +2,138 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Nexus Premier - Wealth Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Premier Mobile</title>
     <style>
         :root { --gold: #d4af37; --dark: #0b0c0d; --surface: #1a1c1e; --text: #f4f5f7; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f5f7; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; color: var(--dark); padding-bottom: 80px; }
         
-        /* Sidebar */
-        .sidebar { width: 260px; background: var(--surface); color: white; display: flex; flex-direction: column; padding: 40px 0; border-right: 1px solid #333; }
-        .brand { padding: 0 40px 40px; font-size: 1.5rem; font-weight: bold; letter-spacing: 3px; color: var(--gold); }
-        .nav-link { padding: 15px 40px; color: #888; text-decoration: none; border-left: 4px solid transparent; transition: 0.3s; font-size: 0.9rem; }
-        .nav-link.active { color: white; background: #25282a; border-left-color: var(--gold); }
+        /* Mobile Header */
+        .header { background: var(--surface); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-weight: bold; letter-spacing: 3px; color: var(--gold); font-size: 1.2rem; }
+        
+        .container { padding: 20px; }
 
-        /* Main Scrollable Content */
-        .main-container { flex: 1; display: flex; overflow-y: auto; }
-        .dashboard-content { flex: 2; padding: 40px; }
-        .ads-sidebar { flex: 0.8; background: #fff; border-left: 1px solid #eee; padding: 40px 25px; }
-
-        /* Balance & Card Section */
-        .top-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px; margin-bottom: 30px; }
-        .card-white { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-top: 4px solid var(--gold); }
-        .bal-amount { font-size: 2.8rem; font-weight: bold; color: var(--dark); margin: 10px 0; }
-
-        /* The Black Nexus Card */
-        .nexus-black-card { 
-            background: linear-gradient(135deg, #1a1c1e 0%, #000 100%); 
-            color: white; border-radius: 18px; padding: 25px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(212, 175, 55, 0.3);
-            display: flex; flex-direction: column; justify-content: space-between; min-height: 200px;
+        /* Real-look Debit Card */
+        .card-container { perspective: 1000px; margin-bottom: 30px; }
+        .debit-card {
+            background: linear-gradient(135deg, #222 0%, #000 100%);
+            width: 100%;
+            aspect-ratio: 1.58/1;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .card-brand { color: var(--gold); font-weight: bold; letter-spacing: 2px; font-size: 0.8rem; }
-        .card-chip { width: 45px; height: 32px; background: linear-gradient(135deg, #d4af37, #f1d592); border-radius: 4px; }
-        .card-num { font-family: 'Courier New', monospace; font-size: 1.2rem; letter-spacing: 3px; }
+        .card-nexus { color: var(--gold); font-weight: bold; font-size: 0.9rem; letter-spacing: 2px; }
+        .chip { width: 45px; height: 35px; background: linear-gradient(135deg, #d4af37, #f1d592); border-radius: 5px; margin: 10px 0; }
+        .card-number { font-family: 'Courier New', monospace; font-size: 1.3rem; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; }
+        .holder-name { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Ad & Market Widgets */
-        .ad-banner { background: var(--dark); color: white; border-radius: 12px; padding: 20px; margin-bottom: 25px; position: relative; overflow: hidden; }
-        .ad-banner b { color: var(--gold); display: block; margin-bottom: 5px; }
-        .ad-banner p { font-size: 0.8rem; margin: 0; opacity: 0.8; }
-        
-        .market-widget { border-top: 1px solid #eee; padding-top: 20px; }
-        .market-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
-        .up { color: #1e7e34; } .down { color: #d93025; }
+        /* Balance View */
+        .balance-section { text-align: center; margin: 20px 0 30px 0; }
+        .bal-label { font-size: 0.75rem; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .bal-amount { font-size: 2.5rem; font-weight: bold; color: var(--dark); margin: 5px 0; }
 
-        /* History Table */
-        .history-box { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { text-align: left; padding: 12px; color: #888; border-bottom: 1px solid #eee; text-transform: uppercase; font-size: 0.7rem; }
-        td { padding: 15px 12px; border-bottom: 1px solid #f9f9f9; }
+        /* Quick Actions */
+        .actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; }
+        .action-btn { background: white; border-radius: 12px; padding: 15px 5px; text-align: center; font-size: 0.7rem; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .action-icon { font-size: 1.2rem; display: block; margin-bottom: 5px; }
+
+        /* History */
+        .history-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .history-item:last-child { border-bottom: none; }
+        .tx-info b { display: block; font-size: 0.9rem; }
+        .tx-info small { color: #888; font-size: 0.75rem; }
+        .tx-amt { font-weight: bold; font-size: 0.95rem; }
+        .tx-amt.pos { color: #27ae60; }
+        .tx-amt.neg { color: #c0392b; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-item { color: #888; text-decoration: none; font-size: 0.65rem; text-align: center; }
+        .nav-item.active { color: var(--gold); }
     </style>
 </head>
-<body onload="initDash()">
+<body onload="initMobile()">
 
-<div class="sidebar">
+<div class="header">
     <div class="brand">NEXUS</div>
-    <a href="dashboard.html" class="nav-link active">Wealth Overview</a>
-    <a href="transfer.html" class="nav-link">Move Money</a>
-    <a href="settings.html" class="nav-link">Security Center</a>
-    <a href="login.html" class="nav-link" style="margin-top:auto; color:var(--gold);">Logout</a>
+    <div style="font-size: 0.7rem; background: var(--gold); color: black; padding: 3px 8px; border-radius: 10px; font-weight: bold;">PREMIER</div>
 </div>
 
-<div class="main-container">
-    <div class="dashboard-content">
-        <h1 style="margin-top:0; font-size: 1.8rem;">Private Dashboard</h1>
-        
-        <div class="top-row">
-            <div class="card-white">
-                <small style="font-weight:bold; color:#888; letter-spacing: 1px;">TOTAL MARKET VALUE</small>
-                <div class="bal-amount" id="dbBal">$1,756,000.00</div>
-                <div style="color:var(--gold); font-size: 0.8rem;">Nexus Elite Checking (...4829)</div>
-            </div>
+<div class="container">
+    <div class="balance-section">
+        <div class="bal-label">Available Balance</div>
+        <div class="bal-amount" id="mBal">$1,756,000.00</div>
+        <div style="font-size: 0.75rem; color: var(--gold);">Nexus Private Wealth (...4829)</div>
+    </div>
 
-            <div class="nexus-black-card">
-                <div class="card-brand">NEXUS BANK • PREMIER</div>
-                <div class="card-chip"></div>
-                <div class="card-num">**** **** **** 4829</div>
-                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <span style="font-size:0.7rem; letter-spacing:1px;">HYUN</span>
-                    <img src="https://wikimedia.org" width="35">
-                </div>
+    <!-- Real Look Debit Card -->
+    <div class="card-container">
+        <div class="debit-card">
+            <div class="card-nexus">NEXUS BANK</div>
+            <div class="chip"></div>
+            <div class="card-number">4112 8890 1234 4829</div>
+            <div class="card-footer">
+                <div class="holder-name">HYUN</div>
+                <img src="https://wikimedia.org" width="40">
             </div>
-        </div>
-
-        <div class="history-box">
-            <h3 style="margin-top:0;">Recent Activity</h3>
-            <table>
-                <thead><tr><th>Date</th><th>Description</th><th>Status</th><th>Value</th></tr></thead>
-                <tbody id="dbHistory">
-                    <tr><td>Apr 02</td><td>Asset Management Fee</td><td><span style="color:#1e7e34">SUCCESS</span></td><td style="color:red">-$2,500.00</td></tr>
-                    <tr><td>Mar 29</td><td>Dividend Reinvestment</td><td><span style="color:#1e7e34">SUCCESS</span></td><td style="color:green">+$14,200.00</td></tr>
-                </tbody>
-            </table>
         </div>
     </div>
 
-    <div class="ads-sidebar">
-        <div class="ad-banner">
-            <b>Nexus Gold Mortgage</b>
-            <p>Unlock 3.2% APR on luxury estates. Private clients only.</p>
-        </div>
-        
-        <div class="ad-banner" style="background: var(--gold); color: var(--dark);">
-            <b style="color: var(--dark);">Global Concierge</b>
-            <p>Your black card includes 24/7 travel & lifestyle assistance.</p>
-        </div>
+    <div class="actions-grid">
+        <div class="action-btn" onclick="location.href='transfer.html'"><span class="action-icon">💸</span>Transfer</div>
+        <div class="action-btn"><span class="action-icon">📊</span>Wealth</div>
+        <div class="action-btn"><span class="action-icon">🛡️</span>Secure</div>
+        <div class="action-btn" onclick="location.href='settings.html'"><span class="action-icon">⚙️</span>Settings</div>
+    </div>
 
-        <div class="market-widget">
-            <h4 style="margin:0 0 15px 0; font-size:0.9rem;">Market Watch</h4>
-            <div class="market-row"><span>S&P 500</span><span class="up">+1.24%</span></div>
-            <div class="market-row"><span>Gold (XAU)</span><span class="up">+$12.50</span></div>
-            <div class="market-row"><span>USD/CAD</span><span class="down">-0.04%</span></div>
-            <div class="market-row"><span>USD/TWD</span><span class="up">+0.12%</span></div>
+    <div class="history-card">
+        <h3 style="margin: 0 0 15px 0; font-size: 1rem;">Recent Activity</h3>
+        <div id="mHistory">
+            <div class="history-item">
+                <div class="tx-info"><b>Asset Management Fee</b><small>Apr 02, 2026</small></div>
+                <div class="tx-amt neg">-$2,500.00</div>
+            </div>
+            <div class="history-item">
+                <div class="tx-info"><b>Dividend Reinvestment</b><small>Mar 29, 2026</small></div>
+                <div class="tx-amt pos">+$14,200.00</div>
+            </div>
         </div>
     </div>
+</div>
+
+<div class="bottom-nav">
+    <a href="#" class="nav-item active">Home</a>
+    <a href="transfer.html" class="nav-item">Payments</a>
+    <a href="settings.html" class="nav-item">Profile</a>
+    <a href="login.html" class="nav-item">Sign Out</a>
 </div>
 
 <script>
-    function initDash() {
+    function initMobile() {
         let b = localStorage.getItem('bankBalance') || 1756000;
-        document.getElementById('dbBal').innerText = "$" + parseFloat(b).toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('mBal').innerText = "$" + parseFloat(b).toLocaleString(undefined, {minimumFractionDigits: 2});
 
         let h = JSON.parse(localStorage.getItem('transHistory')) || [];
-        const body = document.getElementById('dbHistory');
+        const container = document.getElementById('mHistory');
+        
         h.reverse().forEach(tx => {
-            let r = `<tr><td>${tx.date}</td><td><b>Transfer to ${tx.to}</b></td><td style="color:#b7791f; font-weight:bold;">PENDING</td><td style="color:red;">-$${parseFloat(tx.amount).toLocaleString()}</td></tr>`;
-            body.innerHTML = r + body.innerHTML;
+            let item = `
+            <div class="history-item">
+                <div class="tx-info"><b>Transfer to ${tx.to}</b><small>${tx.date} • PENDING</small></div>
+                <div class="tx-amt neg">-$${parseFloat(tx.amount).toLocaleString()}</div>
+            </div>`;
+            container.innerHTML = item + container.innerHTML;
         });
     }
 </script>
