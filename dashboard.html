@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chase Online - Dashboard</title>
+    <style>
+        body { font-family: 'Open Sans', Arial, sans-serif; background-color: #f4f7f9; margin: 0; display: flex; }
+        .sidebar { width: 260px; background: #004a99; height: 100vh; color: white; padding: 20px; box-sizing: border-box; position: fixed; }
+        .profile-box { text-align: center; margin-bottom: 30px; }
+        .profile-pic { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #1a62ad; background: #eee; object-fit: cover; margin-bottom: 10px; }
+        .sidebar nav a { display: block; color: #cbdcf0; text-decoration: none; padding: 12px 10px; border-radius: 4px; margin-bottom: 5px; }
+        .sidebar nav a:hover { background: #1a62ad; color: white; }
+        .main-content { flex: 1; margin-left: 260px; padding: 40px; }
+        .account-overview { display: flex; gap: 25px; margin-bottom: 30px; align-items: stretch; }
+        .balance-card { flex: 1; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 5px solid #0060f0; }
+        .balance-amount { font-size: 2.5rem; font-weight: bold; color: #222; margin: 15px 0; }
+        .debit-card { width: 340px; height: 210px; background: linear-gradient(135deg, #0056b3 0%, #002d5d 100%); border-radius: 15px; padding: 25px; color: white; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box; }
+        .reveal-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.15); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
+        .transactions { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid #f0f0f0; color: #666; font-size: 0.85rem; }
+        td { padding: 15px; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; }
+    </style>
+</head>
+<body onload="initDashboard()">
+
+<div class="sidebar">
+    <div class="profile-box">
+        <img src="profile.jpg" alt="Profile" class="profile-pic" onerror="this.src='https://placeholder.com'">
+        <div style="font-weight: bold;">Hyun</div>
+        <div style="font-size: 0.75rem; color: #cbdcf0;">Private Client</div>
+    </div>
+    <h2>Chase Online</h2>
+    <nav>
+        <a href="dashboard.html">Accounts</a>
+        <a href="transfer.html">Transfer & Pay</a>
+        <a href="#">Security</a>
+        <a href="login.html">Sign Out</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="account-overview">
+        <div class="balance-card">
+            <div style="color: #666; font-size: 0.9rem; font-weight: bold;">TOTAL AVAILABLE BALANCE</div>
+            <div class="balance-amount" id="mainBalance">$1,756,000.00</div>
+            <div style="color: #0060f0; font-size: 0.85rem;">Chase Sapphire Checking (...4829)</div>
+        </div>
+
+        <div class="debit-card">
+            <button class="reveal-btn" onclick="revealCard()">View Details</button>
+            <img src="https://logo-teka.com" width="90" style="filter: brightness(0) invert(1);">
+            <div id="cardNumber" style="font-family: monospace; font-size: 1.3rem; margin-top: 30px; letter-spacing: 2px;">**** **** **** 4829</div>
+            <div id="cvvNumber" style="font-size: 0.8rem; margin-top: 5px; font-family: monospace;">CVV: ***</div>
+            <div style="margin-top: 20px; font-size: 0.9rem;">HYUN</div>
+        </div>
+    </div>
+
+    <div class="transactions">
+        <h3 style="margin:0;">Recent Transactions</h3>
+        <table>
+            <thead><tr><th>Date</th><th>Description</th><th>Status</th><th>Amount</th></tr></thead>
+            <tbody id="transBody">
+                <!-- Static starting transaction -->
+                <tr><td>Apr 08, 2026</td><td><b>Inbound Wire</b> - Global Tech</td><td><span style="color:green; font-weight:bold;">SUCCESSFUL</span></td><td style="color:green;">+$125,000.00</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function initDashboard() {
+        let bal = localStorage.getItem('bankBalance') || 1756000;
+        document.getElementById('mainBalance').innerText = "$" + parseFloat(bal).toLocaleString(undefined, {minimumFractionDigits: 2});
+
+        let history = JSON.parse(localStorage.getItem('transHistory')) || [];
+        const tableBody = document.getElementById('transBody');
+        
+        history.reverse().forEach(tx => {
+            let row = `<tr>
+                <td>${tx.date}</td>
+                <td><b>Transfer to ${tx.to}</b></td>
+                <td><span style="color:#f39c12; font-weight:bold;">${tx.status}</span></td>
+                <td style="color:red; font-weight:bold;">-$${parseFloat(tx.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            </tr>`;
+            tableBody.innerHTML = row + tableBody.innerHTML;
+        });
+    }
+
+    function revealCard() {
+        if (prompt("Enter Security PIN:") === "1590") {
+            document.getElementById('cardNumber').innerText = "4112 8890 1234 4829";
+            document.getElementById('cvvNumber').innerText = "CVV: 590";
+            setTimeout(() => {
+                document.getElementById('cardNumber').innerText = "**** **** **** 4829";
+                document.getElementById('cvvNumber').innerText = "CVV: ***";
+            }, 10000);
+        }
+    }
+</script>
+</body>
+</html>
